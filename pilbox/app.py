@@ -168,6 +168,7 @@ class ImageHandler(tornado.web.RequestHandler):
         self._validate_client()
         self._validate_host()
 
+
         opts = self._get_save_options()
         ops = self._get_operations()
         if "resize" in ops:
@@ -183,6 +184,8 @@ class ImageHandler(tornado.web.RequestHandler):
             opts.update(self._get_rotate_options())
         if "region" in ops:
             Image.validate_rectangle(self.get_argument("rect"))
+
+
 
         Image.validate_options(opts)
 
@@ -234,6 +237,7 @@ class ImageHandler(tornado.web.RequestHandler):
             return (resp.buffer, None)
 
         image = Image(resp.buffer)
+        print(ops)
         for operation in ops:
             if operation == "resize":
                 self._image_resize(image)
@@ -241,6 +245,8 @@ class ImageHandler(tornado.web.RequestHandler):
                 self._image_rotate(image)
             elif operation == "region":
                 self._image_region(image)
+
+        # self._image_enchance_contrast(image)
 
         return (self._image_save(image), image.img.format)
 
@@ -254,6 +260,10 @@ class ImageHandler(tornado.web.RequestHandler):
     def _image_rotate(self, image):
         opts = self._get_rotate_options()
         image.rotate(self.get_argument("deg"), **opts)
+
+    def _image_enchance_contrast(self, image):
+        print("")
+        # image.enchance_contrast(self.get_argument("contrast"))
 
     def _image_save(self, image):
         opts = self._get_save_options()
@@ -302,6 +312,10 @@ class ImageHandler(tornado.web.RequestHandler):
             if v is None:
                 opts[k] = self.settings.get(k, None)
         return opts
+
+    def _get_contrast(self):
+        contrast = self.get_argument("contrast")
+        print("contrast", contrast)
 
     def _validate_operation(self):
         operations = set(self._get_operations())

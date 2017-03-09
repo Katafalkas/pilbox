@@ -23,6 +23,7 @@ import os.path
 
 import PIL.Image
 import PIL.ImageOps
+import PIL.ImageEnhance
 
 from pilbox import errors
 
@@ -225,7 +226,16 @@ class Image(object):
                 deg = 0
 
         expand = False if int(deg) % 90 == 0 else bool(int(opts["expand"]))
+        print("EXP", expand, opts["expand"], deg)
         self.img = self.img.rotate(360 - int(deg), expand=expand)
+        return self
+
+    def enchance_contrast(self, cnt):
+        print("CCC=", cnt)
+        contrast = PIL.ImageEnhance.Brightness(self.img)
+        foo = contrast.enhance(2)
+        self.img = foo
+        print("AFTER=", type(foo))
         return self
 
     def save(self, **kwargs):
